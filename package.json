@@ -1,0 +1,33 @@
+{
+  "name": "metheus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezequielzacca/dont-starve-together-discord-bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ezequielzacca/dont-starve-together-discord-bot/issues"
+  },
+  "homepage": "https://github.com/ezequielzacca/dont-starve-together-discord-bot#readme",
+  "dependencies": {
+    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "typescript": "^3.6.4",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.1",
+    "@types/request": "^2.48.3",
+    "gulp": "^4.0.2",
+    "gulp-nodemon": "^2.4.2",
+    "gulp-typescript": "^5.0.1"
+  }
+}
