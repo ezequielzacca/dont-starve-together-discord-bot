@@ -11,6 +11,7 @@ node_modules
 # Editors
 .idea
 *.iml
+auth.json
 
 # OS metadata
 .DS_Store
@@ -18,5 +19,3 @@ Thumbs.db
 
 # Ignore built ts files
 dist/**/*
-
-src/**/auth.json
