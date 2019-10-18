@@ -5,7 +5,6 @@ logs
 results
 tmp
 
-
 # Dependency directory
 node_modules
 
@@ -19,3 +18,5 @@ Thumbs.db
 
 # Ignore built ts files
 dist/**/*
+
+src/**/auth.json
