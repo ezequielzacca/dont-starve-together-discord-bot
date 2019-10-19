@@ -3,8 +3,7 @@ import { initializeBot } from "./bot";
 import { settings, readContent } from "./settings";
 import * as path from "path";
 import { watchFileChanges } from "./file-watcher";
-import { merge } from "rxjs";
-import { filter, map } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { ChatEventsEnum } from "../enums/chat-events.enum";
 
 export const METHEUS_CHANNEL = "metheus";
