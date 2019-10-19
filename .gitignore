@@ -12,6 +12,7 @@ node_modules
 .idea
 *.iml
 auth.json
+settings.json
 
 # OS metadata
 .DS_Store

@@ -1,39 +1,67 @@
-import Discord from "discord.io";
-var logger = require("winston");
-var auth = require("../auth.json");
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console(), {
-    colorize: true
-});
-logger.level = "debug";
-// Initialize Discord Bot
-var bot = new Discord.Client({
-    token: auth.token,
-    autorun: true
-});
-bot.on("ready", function(evt) {
-    logger.info("Connected");
-    logger.info("Logged in as: ");
-    logger.info(bot.username + " - (" + bot.id + ")");
-});
-bot.on("message", function(user, userID, channelID, message, evt) {
-    // Our bot needs to know if it will execute a command
-    // It will listen for messages that will start with `!`
-    if (message.substring(0, 1) == "!") {
-        var args = message.substring(1).split(" ");
-        var cmd = args[0];
+import { getChatMessageParts } from "./chat";
+import { initializeBot } from "./bot";
+import { settings, readContent } from "./settings";
+import * as path from "path";
+import { watchFileChanges } from "./file-watcher";
+import { merge } from "rxjs";
+import { filter, map } from "rxjs/operators";
+import { ChatEventsEnum } from "../enums/chat-events.enum";
 
-        args = args.splice(1);
-        switch (cmd) {
-            // !ping
-            case "ping":
-                bot.sendMessage({
-                    to: channelID,
-                    message: `Pong ${user}!`
-                });
-                break;
-            // Just add any case commands if you want to..
-        }
+export const METHEUS_CHANNEL = "metheus";
+
+const startServer = async () => {
+  const bot = initializeBot();
+
+  bot.messages.subscribe(message => {
+    if (message.channelName === METHEUS_CHANNEL) {
+      console.log(
+        "someone said: ",
+        message.message,
+        " on channel ",
+        message.channelName
+      );
     }
-});
+  });
+  const SERVER_SETTINGS = await settings();
+
+  const MASTER_CHAT_LOG_PATH = path.join(
+    SERVER_SETTINGS.serverFilesLocation,
+    "Master/server_chat_log.txt"
+  );
+  const CAVES_CHAT_LOG_PATH = path.join(
+    SERVER_SETTINGS.serverFilesLocation,
+    "Caves/server_chat_log.txt"
+  );
+
+  const masterChatLogInitialContent = await readContent(MASTER_CHAT_LOG_PATH);
+  console.log("master chat initial content: ", masterChatLogInitialContent);
+  const cavesChatLogInitialContent = await readContent(CAVES_CHAT_LOG_PATH);
+  console.log("caves chat initial content: ", cavesChatLogInitialContent);
+
+  const masterChatLogChanges = watchFileChanges(
+    masterChatLogInitialContent,
+    MASTER_CHAT_LOG_PATH
+  );
+  /*const cavesChatLogChanges = watchFileChanges(
+    cavesChatLogInitialContent,
+    CAVES_CHAT_LOG_PATH
+  );*/
+
+  const chatMessages = masterChatLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(line => line.indexOf(ChatEventsEnum.Message) > -1)
+    ),
+    map(lines => lines.map(line => getChatMessageParts(line)))
+  );
+
+  chatMessages.subscribe(lines => {
+    lines.map(message => {
+      console.log("gonna send message: ", message.text);
+      bot.send(`__***${message.sender}***__: ${message.text}`);
+    });
+  });
+};
+
+startServer()
+  .then(() => console.log("STARTED..."))
+  .catch(console.log);
