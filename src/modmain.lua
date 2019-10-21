@@ -1,26 +1,33 @@
 local require = GLOBAL.require
---Bosses that spawn and are aggresive towards players
+-- Bosses that spawn and are aggresive towards players
 local Bosses = {"deerclops", "bearger", "toadstool", "klaus", "stalker_atrium"}
+local DeathRadius = 20
 
---Bosses that passively roam around the world
+-- Bosses that passively roam around the world
 local PassiveBosses = {"dragonfly", "moose", "minotaur", "antlion"}
 
-
-for i,v in ipairs(Bosses) do
-	AddPrefabPostInit(v, function(inst)
+for i, v in ipairs(Bosses) do
+    AddPrefabPostInit(v, function(inst)
         print("[Boss Spawned] ", inst)
-        inst:ListenForEvent("death", function(inst)
-            print("[Boss Killed] ", inst)
-        end)
-	end)
+        inst:ListenForEvent("death",
+                            function(inst) print("[Boss Killed] ", inst) end)
+    end)
 end
 
-for i,v in ipairs(PassiveBosses) do
-	AddPrefabPostInit(v, function(inst)        
+for i, v in ipairs(PassiveBosses) do
+    AddPrefabPostInit(v, function(inst)
         inst:ListenForEvent("death", function(inst)
-            print("[Boss Killed] ", inst)
+            -- use FindPlayersInRange
+            local playerNames = ""
+            local deadPosition = inst:GetPosition()
+            local players = FindPlayersInRange(deadPosition.x, deadPosition.y,
+                                               deadPosition.z, DeathRadius, true)
+            for i, value in pairs(players) do
+                playerNames = playerNames .. value
+            end
+            print("[Boss Killed] ", inst, " by ", playerNames)
         end)
-	end)
+    end)
 end
 
 AddPrefabPostInit("world", function()
