@@ -52,11 +52,11 @@ const startBot = async () => {
     "Master/server_log.txt"
   );
 
-  const masterServerLogInitialContent = await readContent(MASTER_CHAT_LOG_PATH);
+  const masterServerLogInitialContent = await readContent(MASTER_SERVER_LOG_PATH);
 
   const masterServerLogChanges = watchFileChanges(
-    masterChatLogInitialContent,
-    MASTER_CHAT_LOG_PATH
+    masterServerLogInitialContent,
+    MASTER_SERVER_LOG_PATH
   );
 
   const logMessages = masterServerLogChanges.pipe(
