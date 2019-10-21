@@ -18,13 +18,13 @@ end
 for i,v in ipairs(PassiveBosses) do
 	AddPrefabPostInit(v, function(inst)        
         inst:ListenForEvent("death", function(inst)
-            print("[Boss Killed] ", inst)
+            print("[Boss Killed] ")
         end)
 	end)
 end
 
 AddPrefabPostInit("world", function()
     GLOBAL.TheWorld:ListenForEvent("resetruins", function()
-        print("[Boss Killed] ancient_fuelweaver")
+        print("[World Event] Ruins Reset")
     end)
 end)

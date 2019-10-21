@@ -39,10 +39,11 @@ export const initializeBot = (): IBot => {
       console.log("no channel matching");
     }
   });
-  bot.on("message", function(user, userID, channelID, message, evt) {
+  bot.on("message", function(user, userID, messageChannelID, message, evt) {
+    if(messageChannelID === channelId)
     messagesSubject.next({
       channelName: channelName,
-      channelID: channelID,
+      channelID: messageChannelID,
       _: evt,
       message: message,
       user: user,
