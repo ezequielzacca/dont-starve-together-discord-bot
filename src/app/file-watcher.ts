@@ -17,27 +17,14 @@ export const watchFileChanges = (
   let md5Previous: string;
   let fsWait = false;
   let previousContent = initialContent;
-  fs.watch(filePath, async (event, filename) => {
-    if (filename) {
-      if (fsWait) return;
-      fsWait = true;
-      setTimeout(() => {
-        fsWait = false;
-      }, 500);
-      console.log("watching");
-      const md5Current = md5(fs.readFileSync(filePath));
-      if (md5Current === md5Previous) {
-        return;
-      }
-      md5Previous = md5Current;
-      const newContent = await readContent(filePath);
-      const filteredContent = newContent.replace(previousContent, "");
-      fileChangesSubject.next({
-        stamp: new Date(),
-        lines: newContent.replace(previousContent, "").split(/\r\n/);
-      });
-      previousContent = newContent;
-    }
-  });
+  setInterval(async () => {
+    const newContent = await readContent(filePath);
+    const filteredContent = newContent.replace(previousContent, "");
+    fileChangesSubject.next({
+      stamp: new Date(),
+      lines: newContent.replace(previousContent, "").split(/\r\n/)
+    });
+    previousContent = newContent;
+  }, 3000);
   return fileChangesSubject;
 };

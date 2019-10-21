@@ -1,14 +1,16 @@
-import { getChatMessageParts } from "./chat";
-import { initializeBot } from "./bot";
-import { settings, readContent } from "./settings";
+import { getChatMessageParts } from "./app/chat";
+import { initializeBot } from "./app/bot";
+import { settings, readContent } from "./app/settings";
 import * as path from "path";
-import { watchFileChanges } from "./file-watcher";
-import { map } from "rxjs/operators";
-import { ChatEventsEnum } from "../enums/chat-events.enum";
+import { watchFileChanges } from "./app/file-watcher";
+import { map, filter } from "rxjs/operators";
+import { ChatEventsEnum } from "./enums/chat-events.enum";
+import { initializeServer } from "./app/server";
 
 export const METHEUS_CHANNEL = "metheus";
 
-const startServer = async () => {
+const startBot = async () => {
+  const SERVER_SETTINGS = await settings();
   const bot = initializeBot();
 
   bot.messages.subscribe(message => {
@@ -21,7 +23,6 @@ const startServer = async () => {
       );
     }
   });
-  const SERVER_SETTINGS = await settings();
 
   const MASTER_CHAT_LOG_PATH = path.join(
     SERVER_SETTINGS.serverFilesLocation,
@@ -46,6 +47,8 @@ const startServer = async () => {
     CAVES_CHAT_LOG_PATH
   );*/
 
+  const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
+
   const chatMessages = masterChatLogChanges.pipe(
     map(changes =>
       changes.lines.filter(line => line.indexOf(ChatEventsEnum.Message) > -1)
@@ -53,14 +56,26 @@ const startServer = async () => {
     map(lines => lines.map(line => getChatMessageParts(line)))
   );
 
+  //Listen for Ingame chat messages and send to discord
   chatMessages.subscribe(lines => {
     lines.map(message => {
       console.log("gonna send message: ", message.text);
       bot.send(`__***${message.sender}***__: ${message.text}`);
     });
   });
+
+  //Listen for discord messages and send them to the game
+  bot.messages
+    .pipe(
+      //filter metheus messages
+      filter(message => message.user.toLowerCase() !== "metheus"),
+      map(message => `c_announce("${message.user}: ${message.message}")`)
+    )
+    .subscribe(message => {
+      sendToServerConsole(message);
+    });
 };
 
-startServer()
+startBot()
   .then(() => console.log("STARTED..."))
   .catch(console.log);

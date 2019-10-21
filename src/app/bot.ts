@@ -1,4 +1,4 @@
-import { METHEUS_CHANNEL } from "./app";
+import { METHEUS_CHANNEL } from "../app";
 import { Subject } from "rxjs";
 import Discord from "discord.io";
 import { IBot, IChannelMessage } from "../interfaces/bot.interfaces";
