@@ -18,7 +18,7 @@ end
 for i,v in ipairs(PassiveBosses) do
 	AddPrefabPostInit(v, function(inst)        
         inst:ListenForEvent("death", function(inst)
-            print("[Boss Killed] ")
+            print("[Boss Killed] ", inst)
         end)
 	end)
 end
