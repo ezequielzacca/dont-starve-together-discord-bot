@@ -1,4 +1,8 @@
-import { getChatMessageParts, getLogParts } from "./app/messages";
+import {
+  getChatMessageParts,
+  getBossSpawnedParts,
+  getBossKilledParts
+} from "./app/messages";
 import { initializeBot } from "./app/bot";
 import { settings, readContent } from "./app/settings";
 import * as path from "path";
@@ -7,12 +11,13 @@ import { map, filter } from "rxjs/operators";
 import { ChatEventsEnum } from "./enums/chat-events.enum";
 import { initializeServer } from "./app/server";
 import { ServerEventsEnum } from "./enums/server-events.enum";
+import { BOSS_SPAWNED_LINE, BOSS_KILLED_LINE } from "./constants/lines.constants";
 
 export const METHEUS_CHANNEL = "metheus";
 
 const startBot = async () => {
   const SERVER_SETTINGS = await settings();
-  const bot = initializeBot();
+  const bot = await initializeBot();
 
   bot.messages.subscribe(message => {
     if (message.channelName === METHEUS_CHANNEL) {
@@ -52,20 +57,35 @@ const startBot = async () => {
     "Master/server_log.txt"
   );
 
-  const masterServerLogInitialContent = await readContent(MASTER_SERVER_LOG_PATH);
+  const masterServerLogInitialContent = await readContent(
+    MASTER_SERVER_LOG_PATH
+  );
 
   const masterServerLogChanges = watchFileChanges(
     masterServerLogInitialContent,
     MASTER_SERVER_LOG_PATH
   );
 
-  const logMessages = masterServerLogChanges.pipe(
+  const bossSpawned = masterServerLogChanges.pipe(
     map(changes =>
-      changes.lines.filter(line =>
-        Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.BossSpawned) > -1
       )
     ),
-    map(lines => lines.map(line => getLogParts(line)))
+    map(lines => lines.map(line => getBossSpawnedParts(line)))
+  );
+
+  const bossKilled = masterServerLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.BossKilled) > -1
+      )
+    ),
+    map(lines => lines.map(line => getBossKilledParts(line)))
   );
 
   //Listen for Ingame chat messages and send to discord
@@ -76,9 +96,17 @@ const startBot = async () => {
     });
   });
 
-  logMessages.subscribe(lines => {
+  bossSpawned.subscribe(lines => {
     lines.map(message => {
-      console.log(message);
+      bot.send(BOSS_SPAWNED_LINE(bot, message.name, message.id));
+    });
+  });
+
+  bossKilled.subscribe(lines => {
+    lines.map(message => {
+      bot.send(
+        BOSS_KILLED_LINE(bot, message.name, message.id, ...message.players)
+      );
     });
   });
 

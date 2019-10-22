@@ -20,7 +20,7 @@ gulp.task(
 gulp.task("nodemon", cb => {
     let started = false;
     return nodemon({
-        script: "dist/app/app.js"
+        script: "dist/app.js"
     }).on("start", () => {
         if (!started) {
             cb();

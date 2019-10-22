@@ -12,4 +12,5 @@ export interface IChannelMessage {
 export interface IBot {
   messages: Observable<IChannelMessage>;
   send(message: string): Promise<void>;
+  emojis: any;
 }
