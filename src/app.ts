@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
     getChatMessageParts,
     getBossSpawnedParts,
@@ -23,11 +24,14 @@ import {
     SEASON_CHANGING_LINE,
     MOON_CHANGING_LINE
 } from "./constants/lines.constants";
+import { PlayerFunctions } from "./mongodb/models/player.model";
+import { IPlayer } from "./interfaces/player.interface";
 
 export const METHEUS_CHANNEL = "metheus";
 
 const startBot = async () => {
     const SERVER_SETTINGS = await settings();
+    await mongoose.connect("mongodb://localhost:27017/dst");
     const bot = await initializeBot();
 
     bot.messages.subscribe(message => {
@@ -182,7 +186,9 @@ const startBot = async () => {
     );
 
     userPicks.subscribe(lines => {
-        lines.map(player => {
+        //register player on db
+        lines.map(async player => {
+            await PlayerFunctions.create(<IPlayer>player);
             bot.send(PLAYER_PICKED_LINE(bot, player));
         });
     });

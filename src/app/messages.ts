@@ -2,7 +2,7 @@ import {
     IBossKilledEvent,
     IPlayer,
     IBossSpawnedEvent,
-    IPlayerConnectioEvent,
+    IPlayerConnectionEvent,
     ISeasonEndCloseEvent,
     IMoonPhaseChangeCloseEvent
 } from "./../interfaces/events.interfaces";
@@ -74,7 +74,7 @@ export const getBossKilledParts = (logMessage: string): IBossKilledEvent => {
 
 export const getPlayersConnectionPart = (
     logMessage: string
-): IPlayerConnectioEvent => {
+): IPlayerConnectionEvent => {
     //eg: [00:01:22]: [Player Connected] :	KI_12313@RHeadShot@webber
     //eg2: [00:01:22]: [Player Disconnected] :	KI_12313@RHeadShot@webber
 

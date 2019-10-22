@@ -22,7 +22,7 @@ export interface IBossSpawnedEvent {
     name: string;
 }
 
-export interface IPlayerConnectioEvent extends IPlayer {}
+export interface IPlayerConnectionEvent extends IPlayer {}
 
 export interface IPlayer {
     id: string;
