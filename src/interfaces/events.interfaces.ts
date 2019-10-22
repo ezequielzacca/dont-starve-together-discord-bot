@@ -1,4 +1,5 @@
-import { SeasonsEnum } from './../enums/seasons.enum';
+import { MoonPhasesEnum } from "./../enums/moon-phases.enum";
+import { SeasonsEnum } from "./../enums/seasons.enum";
 import { IPlayer } from "./events.interfaces";
 export interface IChatMessageEvent {
     sender: string;
@@ -31,4 +32,8 @@ export interface IPlayer {
 
 export interface ISeasonEndCloseEvent {
     next: SeasonsEnum;
+}
+
+export interface IMoonPhaseChangeCloseEvent {
+    next: MoonPhasesEnum;
 }

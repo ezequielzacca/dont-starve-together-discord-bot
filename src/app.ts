@@ -3,7 +3,8 @@ import {
     getBossSpawnedParts,
     getBossKilledParts,
     getPlayersConnectionPart,
-    getSeasonEndingParts
+    getSeasonEndingParts,
+    getMoonPhaseChaningParts
 } from "./app/messages";
 import { initializeBot } from "./app/bot";
 import { settings, readContent } from "./app/settings";
@@ -19,7 +20,8 @@ import {
     PLAYER_CONNECTED_LINE,
     PLAYER_DISCONNECTED_LINE,
     PLAYER_PICKED_LINE,
-    SEASON_CHANGING_LINE
+    SEASON_CHANGING_LINE,
+    MOON_CHANGING_LINE
 } from "./constants/lines.constants";
 
 export const METHEUS_CHANNEL = "metheus";
@@ -201,6 +203,23 @@ const startBot = async () => {
     seasonEnding.subscribe(lines => {
         lines.map(change => {
             bot.send(SEASON_CHANGING_LINE(bot, change.next));
+        });
+    });
+
+    const moonPhaseChanging = masterServerLogChanges.pipe(
+        map(changes =>
+            changes.lines.filter(
+                line =>
+                    //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+                    line.indexOf(ServerEventsEnum.MoonPhaseClose) > -1
+            )
+        ),
+        map(lines => lines.map(line => getMoonPhaseChaningParts(line)))
+    );
+
+    moonPhaseChanging.subscribe(lines => {
+        lines.map(change => {
+            bot.send(MOON_CHANGING_LINE(bot, change.next));
         });
     });
 

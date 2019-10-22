@@ -3,11 +3,13 @@ import {
     IPlayer,
     IBossSpawnedEvent,
     IPlayerConnectioEvent,
-    ISeasonEndCloseEvent
+    ISeasonEndCloseEvent,
+    IMoonPhaseChangeCloseEvent
 } from "./../interfaces/events.interfaces";
 import { IChatMessageEvent } from "../interfaces/events.interfaces";
 import { BossesList } from "../enums/bosses.enum";
 import { nextSeason } from "../utils/season.utils";
+import { MoonPhasesEnum } from "../enums/moon-phases.enum";
 export const removeBrackets = (text: string) => {
     return text.replace(/\[(.*?)\]/g, "");
 };
@@ -97,6 +99,20 @@ export const getSeasonEndingParts = (
 
     const currentSeason = splited[4].trim();
     const next = nextSeason(currentSeason);
+
+    return {
+        next: next
+    };
+};
+
+export const getMoonPhaseChaningParts = (
+    logMessage: string
+): IMoonPhaseChangeCloseEvent => {
+    //eg: [00:01:22]: [Moon Phase Close] :	new
+
+    const splited = logMessage.split(":");
+
+    const next = <MoonPhasesEnum>splited[4].trim();
 
     return {
         next: next
