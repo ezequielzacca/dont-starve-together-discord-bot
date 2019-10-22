@@ -1,3 +1,4 @@
+import { IPlayer } from "./events.interfaces";
 export interface IChatMessageEvent {
   sender: string;
   text: string;
@@ -18,6 +19,8 @@ export interface IBossSpawnedEvent {
   id: string;
   name: string;
 }
+
+export interface IPlayerConnectioEvent extends IPlayer {}
 
 export interface IPlayer {
   id: string;

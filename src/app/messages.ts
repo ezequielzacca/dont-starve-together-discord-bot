@@ -1,4 +1,9 @@
-import { IBossKilledEvent, IPlayer, IBossSpawnedEvent } from "./../interfaces/events.interfaces";
+import {
+  IBossKilledEvent,
+  IPlayer,
+  IBossSpawnedEvent,
+  IPlayerConnectioEvent
+} from "./../interfaces/events.interfaces";
 import { IChatMessageEvent } from "../interfaces/events.interfaces";
 import { BossesList } from "../enums/bosses.enum";
 export const removeBrackets = (text: string) => {
@@ -39,7 +44,7 @@ export const getBossKilledParts = (logMessage: string): IBossKilledEvent => {
   console.log("logMessage: ", splited);
   const bossId = splited[4].split("-")[1].trim();
   const bossName = BossesList[bossId];
-  //eg: KZtyler(wolfgang)|	 	RHeadShot(webber)|
+  //eg: KU_123123@KZtyler@wolfgang|	 	KU_98798@RHeadShot@webber|
   const playersConcat = splited[5];
   const players: Array<IPlayer> = playersConcat
     .split("|")
@@ -51,7 +56,7 @@ export const getBossKilledParts = (logMessage: string): IBossKilledEvent => {
       return player;
     })
     .map(player => ({
-      id:player[0],
+      id: player[0],
       name: player[1],
       character: player[2]
     }));
@@ -60,5 +65,23 @@ export const getBossKilledParts = (logMessage: string): IBossKilledEvent => {
     id: bossId,
     name: bossName,
     players: players
+  };
+};
+
+export const getPlayersConnectionPart = (
+  logMessage: string
+): IPlayerConnectioEvent => {
+  //eg: [00:01:22]: [Player Connected] :	KI_12313@RHeadShot@webber
+  //eg2: [00:01:22]: [Player Disconnected] :	KI_12313@RHeadShot@webber
+
+  const splited = logMessage.split(":");
+
+  const playerData = splited[4];
+  const player = playerData.split("@");
+
+  return {
+    id: player[0],
+    name: player[1],
+    character: player[2]
   };
 };

@@ -26,3 +26,12 @@ export const BOSS_KILLED_LINE = (bot: IBot, ...args: Array<string | IPlayer>) =>
     .map(player => <IPlayer>player)
     .map(player => `${getEmoji(bot, player.character)} ${player.name}`)
     .join(" ")}. Hurra!!`;
+
+export const PLAYER_CONNECTED_LINE = (bot: IBot, player: IPlayer) =>
+  `${getEmoji(bot, player.character)} ${player.name} se ha conectado`;
+
+export const PLAYER_DISCONNECTED_LINE = (bot: IBot, player: IPlayer) =>
+  `${getEmoji(bot, player.character)} ${player.name} se ha desconectado`;
+
+  export const PLAYER_PICKED_LINE = (bot: IBot, player: IPlayer) =>
+  `Damos la bienvenida a ${getEmoji(bot, player.character)} ${player.name}! Esperamos disfrutes de esta aventura.`;

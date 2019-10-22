@@ -1,5 +1,8 @@
 export enum ServerEventsEnum {
   BossSpawned = "Boss Spawned",
   BossKilled = "Boss Killed",
-  WorldEvent = "WorldEvent"
+  WorldEvent = "WorldEvent",
+  PlayerConnected = "Player Connected",
+  PlayerDisconnected = "Player Disconnected",
+  PlayerPicked = "Player Picked"
 }

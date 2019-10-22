@@ -1,7 +1,8 @@
 import {
   getChatMessageParts,
   getBossSpawnedParts,
-  getBossKilledParts
+  getBossKilledParts,
+  getPlayersConnectionPart
 } from "./app/messages";
 import { initializeBot } from "./app/bot";
 import { settings, readContent } from "./app/settings";
@@ -11,7 +12,13 @@ import { map, filter } from "rxjs/operators";
 import { ChatEventsEnum } from "./enums/chat-events.enum";
 import { initializeServer } from "./app/server";
 import { ServerEventsEnum } from "./enums/server-events.enum";
-import { BOSS_SPAWNED_LINE, BOSS_KILLED_LINE } from "./constants/lines.constants";
+import {
+  BOSS_SPAWNED_LINE,
+  BOSS_KILLED_LINE,
+  PLAYER_CONNECTED_LINE,
+  PLAYER_DISCONNECTED_LINE,
+  PLAYER_PICKED_LINE
+} from "./constants/lines.constants";
 
 export const METHEUS_CHANNEL = "metheus";
 
@@ -29,6 +36,8 @@ const startBot = async () => {
       );
     }
   });
+
+  //Chat log entries
 
   const MASTER_CHAT_LOG_PATH = path.join(
     SERVER_SETTINGS.serverFilesLocation,
@@ -51,6 +60,16 @@ const startBot = async () => {
     ),
     map(lines => lines.map(line => getChatMessageParts(line)))
   );
+
+  //Listen for Ingame chat messages and send to discord
+  chatMessages.subscribe(lines => {
+    lines.map(message => {
+      console.log("gonna send message: ", message.text);
+      bot.send(`__***${message.sender}***__: ${message.text}`);
+    });
+  });
+
+  //Server Log Entries
 
   const MASTER_SERVER_LOG_PATH = path.join(
     SERVER_SETTINGS.serverFilesLocation,
@@ -77,6 +96,12 @@ const startBot = async () => {
     map(lines => lines.map(line => getBossSpawnedParts(line)))
   );
 
+  bossSpawned.subscribe(lines => {
+    lines.map(message => {
+      bot.send(BOSS_SPAWNED_LINE(bot, message.name, message.id));
+    });
+  });
+
   const bossKilled = masterServerLogChanges.pipe(
     map(changes =>
       changes.lines.filter(
@@ -88,25 +113,62 @@ const startBot = async () => {
     map(lines => lines.map(line => getBossKilledParts(line)))
   );
 
-  //Listen for Ingame chat messages and send to discord
-  chatMessages.subscribe(lines => {
-    lines.map(message => {
-      console.log("gonna send message: ", message.text);
-      bot.send(`__***${message.sender}***__: ${message.text}`);
-    });
-  });
-
-  bossSpawned.subscribe(lines => {
-    lines.map(message => {
-      bot.send(BOSS_SPAWNED_LINE(bot, message.name, message.id));
-    });
-  });
-
   bossKilled.subscribe(lines => {
     lines.map(message => {
       bot.send(
         BOSS_KILLED_LINE(bot, message.name, message.id, ...message.players)
       );
+    });
+  });
+
+  const userConnections = masterServerLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.PlayerConnected) > -1
+      )
+    ),
+    map(lines => lines.map(line => getPlayersConnectionPart(line)))
+  );
+
+  userConnections.subscribe(lines => {
+    lines.map(player => {
+      bot.send(PLAYER_CONNECTED_LINE(bot, player));
+    });
+  });
+
+  const userDisconnections = masterServerLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.PlayerDisconnected) > -1
+      )
+    ),
+    map(lines => lines.map(line => getPlayersConnectionPart(line)))
+  );
+
+  userDisconnections.subscribe(lines => {
+    lines.map(player => {
+      bot.send(PLAYER_DISCONNECTED_LINE(bot, player));
+    });
+  });
+
+  const userPicks = masterServerLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.PlayerPicked) > -1
+      )
+    ),
+    map(lines => lines.map(line => getPlayersConnectionPart(line)))
+  );
+
+  userPicks.subscribe(lines => {
+    lines.map(player => {
+      bot.send(PLAYER_PICKED_LINE(bot, player));
     });
   });
 
