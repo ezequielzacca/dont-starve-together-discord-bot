@@ -1,6 +1,7 @@
 import { IBot } from "../interfaces/bot.interfaces";
 import { getEmoji } from "../app/bot";
 import { IPlayer } from "../interfaces/events.interfaces";
+import { SeasonsEnum } from "../enums/seasons.enum";
 
 export const BOSS_SPAWNED_LINE = (bot: IBot, ...args: Array<string>) => {
   const emoji = getEmoji(bot, args[1]);
@@ -35,3 +36,17 @@ export const PLAYER_DISCONNECTED_LINE = (bot: IBot, player: IPlayer) =>
 
   export const PLAYER_PICKED_LINE = (bot: IBot, player: IPlayer) =>
   `Damos la bienvenida a ${getEmoji(bot, player.character)} ${player.name}! Esperamos disfrutes de esta aventura.`;
+
+  export const SEASON_CHANGING_LINE = (bot: IBot, season:SeasonsEnum) =>{
+    switch(season){
+      case SeasonsEnum.Autumn:
+        return `${getEmoji(bot, season)} Empiezan a caer las hojas de los arboles... El Otoño se acerca!`;
+        case SeasonsEnum.Winter:
+        return `${getEmoji(bot, season)} Brrrrr que frio! Parece que se acerca el invierno...`;
+        case SeasonsEnum.Spring:
+        return `${getEmoji(bot, season)} Nubes grises llenando el cielo... ¿Se acercara la primavera?`;
+        case SeasonsEnum.Summer:
+        return `${getEmoji(bot, season)} Que calor!! Parece que se nos viene el Verano...`;
+    }
+  }
+  
