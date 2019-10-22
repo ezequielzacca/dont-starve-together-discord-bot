@@ -46,8 +46,8 @@ AddPrefabPostInit("world", function()
     GLOBAL.TheWorld:ListenForEvent("ms_playerjoined", function(inst, player)
         print("ms_playerjoined")
         if player.prefab ~= nil then
-            local playerData = player.userid .. "@" .. player.name ..
-                                   "@" .. player.prefab
+            local playerData = player.userid .. "@" .. player.name .. "@" ..
+                                   player.prefab
             print("[Player Connected] : ", playerData)
         end
     end)
@@ -62,11 +62,11 @@ AddPrefabPostInit("world", function()
     end)
 
     GLOBAL.TheWorld:ListenForEvent("ms_newplayercharacterspawned",
-                                   function(inst)
+                                   function(inst, data)
         print("ms_newplayercharacterspawned")
         local playerData =
-            inst.userid .. "@" .. inst.name .. "@" ..
-                inst.prefab
+            data.player.userid .. "@" .. data.player.name .. "@" ..
+                data.player.prefab
         print("[Player Picked] : ", playerData)
     end)
 end)
