@@ -78,8 +78,8 @@ export const initializeBot = (): Promise<IBot> => {
 };
 
 export const getEmoji = (bot: IBot, name: string): string => {
-  console.log("bot: ", bot);
-  console.log("bot.emojis: ", bot.emojis);
+  //console.log("bot: ", bot);
+  //console.log("bot.emojis: ", bot.emojis);
   return `<:${name}:${
     Object.keys(bot.emojis)
       .map(key => bot.emojis[key])

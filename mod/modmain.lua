@@ -75,20 +75,13 @@ AddPrefabPostInit("world", function()
         if data.remainingdaysinseason == 4 then
             print("[Season End Close] : ", data.season)
         end
-    end) 
-    
-    --  moon change warning    
-    GLOBAL.TheWorld:ListenForEvent("ms_nextcycle", function(inst, data)
-        local cycleDayWithoutFirstMoon = data.cycle - 10
-        local isFullMoonNear = cycleDayWithoutFirstMoon > 0 and
-                                   (cycleDayWithoutFirstMoon -
-                                       math.floor(cycleDayWithoutFirstMoon / 20) *
-                                       20) == 0
-        local isNewMoonNear = cycleDayWithoutFirstMoon > 0 and
-                                  (cycleDayWithoutFirstMoon -
-                                      math.floor(cycleDayWithoutFirstMoon / 20) *
-                                      20) == 10
-        if isFullMoonNear then print("[Moon Phase Close] : full") end
-        if isNewMoonNear then print("[Moon Phase Close] : new") end
+    end)
+
+    --  cycle change    
+    GLOBAL.TheWorld:ListenForEvent("cycleschanged", function(inst, cycle)
+        print("[Cycle Changed] : ", cycle)
+
+        -- if isFullMoonNear then print("[Moon Phase Close] : full") end
+        -- if isNewMoonNear then print("[Moon Phase Close] : new") end
     end)
 end)
