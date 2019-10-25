@@ -27,20 +27,26 @@ export const initializeBot = (settings: ISettings): Promise<IBot> => {
         bot.on(
             "message",
             async (user, userID, messageChannelID, message, evt) => {
-                if (channels.some(channel => channel.id === messageChannelID)) {
-                    const messagechannel = channels.find(
-                        channel => channel.id === messageChannelID
-                    );
-                    if (messagechannel) {
-                        messagesSubject.next({
-                            channelName: messagechannel.name,
-                            channelID: messageChannelID,
-                            _: evt,
-                            message: message,
-                            user: user,
-                            userID: userID
-                        });
-                        await broadcast(message, user, messageChannelID);
+                if (user !== bot.username) {
+                    if (
+                        channels.some(
+                            channel => channel.id === messageChannelID
+                        )
+                    ) {
+                        const messagechannel = channels.find(
+                            channel => channel.id === messageChannelID
+                        );
+                        if (messagechannel) {
+                            messagesSubject.next({
+                                channelName: messagechannel.name,
+                                channelID: messageChannelID,
+                                _: evt,
+                                message: message,
+                                user: user,
+                                userID: userID
+                            });
+                            await broadcast(message, user, messageChannelID);
+                        }
                     }
                 }
             }

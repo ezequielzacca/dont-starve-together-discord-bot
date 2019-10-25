@@ -69,7 +69,7 @@ const startBot = async () => {
     MASTER_CHAT_LOG_PATH
   );
 
-  const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
+  //const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
 
   const chatMessages = masterChatLogChanges.pipe(
     map(changes =>
@@ -268,7 +268,7 @@ const startBot = async () => {
   );
 
   discordChatMessages.subscribe(message => {
-    sendToServerConsole(message);
+    //sendToServerConsole(message);
   });
 
   //listen for console commands
