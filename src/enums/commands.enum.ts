@@ -1,4 +1,5 @@
 export enum BotCommandsEnum {
   ListPlayers = "players",
-  Scores = "scores"
+  Scores = "scores",
+  Seconomy = "seconomy"
 }

@@ -6,11 +6,12 @@ export const initializeServer = async (
   settings: ISettings
 ): Promise<(text: string) => void> => {
   console.log("updating steamcmd app");
-  /*await executeCommand(
+  await executeCommand(
     "steamcmd.exe",
     ["+login anonymous", "+app_update 343050  validate", "+quit"],
-    settings.steamCmdLocation
-  );*/
+    settings.steamCmdLocation,
+    true
+  );
 
   const kleiFolderLocation = path.join(settings.serverFilesLocation, "../..");
   const dedicatedServerNullRenderLocation = path.join(

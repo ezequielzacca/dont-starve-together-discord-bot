@@ -6,5 +6,6 @@ export enum ServerEventsEnum {
     PlayerDisconnected = "Player Disconnected",
     PlayerPicked = "Player Picked",
     SeasonEndClose = "Season End Close",
-    CycleChanged = "Cycle Changed"
+    CycleChanged = "Cycle Changed",
+    SecoinsUpdated = "Player Secoins"
 }

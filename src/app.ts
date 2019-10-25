@@ -8,7 +8,8 @@ import {
   getBossKilledParts,
   getPlayersConnectionPart,
   getSeasonEndingParts,
-  getMoonPhaseChaningParts
+  getMoonPhaseChaningParts,
+  getSecoinsUpdatedParts
 } from "./app/messages";
 import { initializeBot } from "./app/bot";
 import { settings, readContent } from "./app/settings";
@@ -27,7 +28,8 @@ import {
   SEASON_CHANGING_LINE,
   MOON_CHANGING_LINE,
   LIST_PLAYERS_LINE,
-  SCOREBOARD
+  SCOREBOARD,
+  SECONOMY
 } from "./constants/lines.constants";
 import { PlayerFunctions } from "./mongodb/models/player.model";
 import {
@@ -209,6 +211,24 @@ const startBot = async () => {
     });
   });
 
+  const playerSecoinsUpdated = masterServerLogChanges.pipe(
+    map(changes =>
+      changes.lines.filter(
+        line =>
+          //Object.keys(ServerEventsEnum).some(key => line.indexOf(key) > -1)
+          line.indexOf(ServerEventsEnum.SecoinsUpdated) > -1
+      )
+    ),
+    map(lines => lines.map(line => getSecoinsUpdatedParts(line)))
+  );
+
+  playerSecoinsUpdated.subscribe(lines => {
+    //register player on db
+    lines.map(async player => {
+      await PlayerFunctions.updateSecoins(player, player.secoins);
+    });
+  });
+
   //Season And Moon Cycles
 
   const seasonEnding = masterServerLogChanges.pipe(
@@ -308,6 +328,28 @@ const startBot = async () => {
     //now get all players
     const allPlayers = await PlayerFunctions.list();
     bot.send(SCOREBOARD(bot, allPlayers));
+  });
+
+  const secoins = discordCommands.pipe(
+    //filter metheus messages
+    filter(message => message === BotCommandsEnum.Seconomy)
+  );
+
+  secoins.subscribe(async () => {
+    //register connected players that are not on the db
+    let dbPlayers = await PlayerFunctions.list();
+    let connectedPlayers = getConnectedPlayers();
+    let unregisteredPlayers = connectedPlayers.filter(
+      player => !dbPlayers.some(db => db.uid === player.uid)
+    );
+    for (let i = 0; i < unregisteredPlayers.length; i++) {
+      await PlayerFunctions.create(unregisteredPlayers[i]);
+    }
+    
+    //now get all players
+    const allPlayers = await PlayerFunctions.list();
+    
+    bot.send(SECONOMY(bot, allPlayers));
   });
 };
 

@@ -1,4 +1,7 @@
-import { IPlayerConnectionEvent } from "./../../interfaces/events.interfaces";
+import {
+  IPlayerConnectionEvent,
+  ISecoinsUpdatedEvent
+} from "./../../interfaces/events.interfaces";
 import { IPlayer } from "./../../interfaces/player.interface";
 import mongoose from "mongoose";
 import { async } from "rxjs/internal/scheduler/async";
@@ -10,6 +13,10 @@ export const PlayerSchema = new mongoose.Schema({
   score: {
     type: Number,
     default: 0
+  },
+  secoins: {
+    type: Number,
+    default: 200
   }
 });
 
@@ -39,7 +46,16 @@ export const PlayerFunctions = {
     storedPlayer.score += score;
     storedPlayer.save();
   },
-  list: async () =>{
+  updateSecoins: async (player: ISecoinsUpdatedEvent, secoins: number) => {
+    console.log("update secoins called for: ", player, " ", secoins);
+    let storedPlayer = await PlayerFunctions.find(player.uid);
+    if (!storedPlayer) {
+      storedPlayer = await PlayerFunctions.create(player);
+    }
+    storedPlayer.secoins = secoins;
+    storedPlayer.save();
+  },
+  list: async () => {
     return Player.find();
   }
 };

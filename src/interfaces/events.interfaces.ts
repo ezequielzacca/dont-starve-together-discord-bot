@@ -34,3 +34,7 @@ export interface ISeasonEndCloseEvent {
 export interface IMoonPhaseChangeCloseEvent {
   next: MoonPhasesEnum;
 }
+
+export interface ISecoinsUpdatedEvent extends IPlayerConnectionEvent {
+  secoins: number;
+}

@@ -3,7 +3,8 @@ import {
   IBossSpawnedEvent,
   IPlayerConnectionEvent,
   ISeasonEndCloseEvent,
-  IMoonPhaseChangeCloseEvent
+  IMoonPhaseChangeCloseEvent,
+  ISecoinsUpdatedEvent
 } from "./../interfaces/events.interfaces";
 import { IChatMessageEvent } from "../interfaces/events.interfaces";
 import { BossesList } from "../enums/bosses.enum";
@@ -122,5 +123,25 @@ export const getMoonPhaseChaningParts = (
       : isNewMoon
       ? MoonPhasesEnum.New
       : MoonPhasesEnum.Other
+  };
+};
+
+export const getSecoinsUpdatedParts = (
+  logMessage: string
+): ISecoinsUpdatedEvent => {
+  //eg: [00:01:22]: [Boss Spawned] :	121750 - deerclops
+
+  const splited = logMessage.split(":");
+
+  const playerData = splited[4].trim();
+  const player = playerData.split("@");
+  const playerSecoins = Number.parseInt(player[3]);
+  const secoins = !isNaN(playerSecoins) ? playerSecoins : 0;
+
+  return {
+    uid: player[0],
+    name: player[1],
+    character: player[2],
+    secoins: secoins
   };
 };

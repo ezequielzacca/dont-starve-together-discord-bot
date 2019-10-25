@@ -128,3 +128,16 @@ export const SCOREBOARD = (bot: IBot, players: Array<IPlayer>) => {
         .join("\r\n")}`
     : "Ningun jugador registra puntaje.";
 };
+
+export const SECONOMY = (bot: IBot, players: Array<IPlayer>) => {
+  const sortedPlayers = players.sort((a, b) => (a.score < b.score ? 1 : -1));
+
+  return players.length > 0
+    ? `${sortedPlayers
+        .map(
+          player =>
+            `${getEmoji(bot, player.character)} ${player.name}: ${getEmoji(bot,'secoins')}${player.secoins}`
+        )
+        .join("\r\n")}`
+    : "Ningun jugador registra secoins.";
+};
