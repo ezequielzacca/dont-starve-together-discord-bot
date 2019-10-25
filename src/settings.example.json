@@ -1,3 +1,7 @@
 {
-  "serverFilesLocation": "c:/Users/YourName/Documents/Klei/DoNotStarveTogether/MyDediServer"
+    "serverFilesLocation": "c:/Users/Ezequiel/Documents/Klei/DoNotStarveTogether/MyDediServer",
+    "steamCmdLocation": "c:/steamcmd",
+    "bot": {
+        "channels": ["metheus"]
+    }
 }

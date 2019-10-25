@@ -43,7 +43,7 @@ export const METHEUS_CHANNEL = "metheus";
 const startBot = async () => {
   const SERVER_SETTINGS = await settings();
   await mongoose.connect("mongodb://localhost:27017/dst");
-  const bot = await initializeBot();
+  const bot = await initializeBot(SERVER_SETTINGS);
 
   bot.messages.subscribe(message => {
     if (message.channelName === METHEUS_CHANNEL) {
@@ -71,7 +71,7 @@ const startBot = async () => {
     MASTER_CHAT_LOG_PATH
   );
 
-  const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
+  //const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
 
   const chatMessages = masterChatLogChanges.pipe(
     map(changes =>
@@ -119,7 +119,7 @@ const startBot = async () => {
 
   bossSpawned.subscribe(lines => {
     lines.map(message => {
-      bot.send(BOSS_SPAWNED_LINE(bot, message.name, message.id));
+      bot.send(BOSS_SPAWNED_LINE(message.name, message.id));
     });
   });
 
@@ -144,7 +144,6 @@ const startBot = async () => {
       }
       bot.send(
         BOSS_KILLED_LINE(
-          bot,
           MOB_SCORES[message.id],
           message.id,
           message.name,
@@ -170,7 +169,7 @@ const startBot = async () => {
   userConnections.subscribe(lines => {
     lines.map(player => {
       addConnectedPlayer(player);
-      bot.send(PLAYER_CONNECTED_LINE(bot, player));
+      bot.send(PLAYER_CONNECTED_LINE(player));
     });
   });
 
@@ -188,7 +187,7 @@ const startBot = async () => {
   userDisconnections.subscribe(lines => {
     lines.map(player => {
       removeConnectedPlayer(player);
-      bot.send(PLAYER_DISCONNECTED_LINE(bot, player));
+      bot.send(PLAYER_DISCONNECTED_LINE(player));
     });
   });
 
@@ -207,7 +206,7 @@ const startBot = async () => {
     //register player on db
     lines.map(async player => {
       await PlayerFunctions.create(player);
-      bot.send(PLAYER_PICKED_LINE(bot, player));
+      bot.send(PLAYER_PICKED_LINE(player));
     });
   });
 
@@ -245,7 +244,7 @@ const startBot = async () => {
   seasonEnding.subscribe(lines => {
     lines.map(change => {
       console.log("season change: ", change);
-      bot.send(SEASON_CHANGING_LINE(bot, change.next));
+      bot.send(SEASON_CHANGING_LINE(change.next));
     });
   });
 
@@ -272,7 +271,7 @@ const startBot = async () => {
 
   moonChange.subscribe(lines => {
     lines.map(change => {
-      bot.send(MOON_CHANGING_LINE(bot, change.next));
+      bot.send(MOON_CHANGING_LINE(change.next));
     });
   });
 
@@ -289,7 +288,7 @@ const startBot = async () => {
   );
 
   discordChatMessages.subscribe(message => {
-    sendToServerConsole(message);
+    //sendToServerConsole(message);
   });
 
   //listen for console commands
@@ -306,7 +305,7 @@ const startBot = async () => {
   );
 
   listPlayers.subscribe(() =>
-    bot.send(LIST_PLAYERS_LINE(bot, getConnectedPlayers()))
+    bot.send(LIST_PLAYERS_LINE(getConnectedPlayers()))
   );
 
   //list players command
@@ -327,7 +326,7 @@ const startBot = async () => {
     }
     //now get all players
     const allPlayers = await PlayerFunctions.list();
-    bot.send(SCOREBOARD(bot, allPlayers));
+    bot.send(SCOREBOARD(allPlayers));
   });
 
   const secoins = discordCommands.pipe(

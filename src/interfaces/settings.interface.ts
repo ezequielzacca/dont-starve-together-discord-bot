@@ -1,4 +1,7 @@
 export interface ISettings {
-  serverFilesLocation: string;
-  steamCmdLocation: string;
+    serverFilesLocation: string;
+    steamCmdLocation: string;
+    bot: {
+        channels: string[];
+    };
 }
