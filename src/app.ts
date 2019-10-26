@@ -64,14 +64,16 @@ const startBot = async () => {
   );
 
   const masterChatLogInitialContent = await readContent(MASTER_CHAT_LOG_PATH);
-  console.log("master chat initial content: ", masterChatLogInitialContent);
 
   const masterChatLogChanges = watchFileChanges(
     masterChatLogInitialContent,
     MASTER_CHAT_LOG_PATH
   );
 
-  //const sendToServerConsole = await initializeServer(SERVER_SETTINGS);
+  let sendToServerConsole: (text: string) => void;
+  if (SERVER_SETTINGS.online) {
+    sendToServerConsole = await initializeServer(SERVER_SETTINGS);
+  }
 
   const chatMessages = masterChatLogChanges.pipe(
     map(changes =>
@@ -288,7 +290,9 @@ const startBot = async () => {
   );
 
   discordChatMessages.subscribe(message => {
-    //sendToServerConsole(message);
+    if (SERVER_SETTINGS.online) {
+      sendToServerConsole(message);
+    }
   });
 
   //listen for console commands
@@ -344,11 +348,11 @@ const startBot = async () => {
     for (let i = 0; i < unregisteredPlayers.length; i++) {
       await PlayerFunctions.create(unregisteredPlayers[i]);
     }
-    
+
     //now get all players
     const allPlayers = await PlayerFunctions.list();
-    
-    bot.send(SECONOMY(bot, allPlayers));
+
+    bot.send(SECONOMY(allPlayers));
   });
 };
 

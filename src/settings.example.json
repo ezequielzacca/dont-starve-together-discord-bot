@@ -2,6 +2,7 @@
     "serverFilesLocation": "c:/Users/Ezequiel/Documents/Klei/DoNotStarveTogether/MyDediServer",
     "steamCmdLocation": "c:/steamcmd",
     "bot": {
-        "channels": ["metheus"]
+      "channels": ["metheus", "test1"]
     }
-}
+  }
+  
